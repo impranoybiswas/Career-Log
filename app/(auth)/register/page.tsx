@@ -17,12 +17,17 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterForm>();
 
-  const onSubmit = (data: RegisterForm) => {
+  const onSubmit = async (data: RegisterForm) => {
+    await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     console.log("Register Data:", data);
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/80 backdrop-blur-md p-8 shadow-xl">
         <h2 className="text-3xl font-bold text-white text-center">
           Create Account
@@ -59,12 +64,41 @@ export default function RegisterPage() {
             })}
           />
 
-          <select {...register("gender", { required: "Gender required" })}>
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
+          <div className="flex gap-4 mt-2">
+            <label className="flex items-center gap-1">
+                Gender : 
+            </label>
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                value="male"
+                {...register("gender", { required: "Gender required" })}
+              />
+              Male
+            </label>
+
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                value="female"
+                {...register("gender", { required: "Gender required" })}
+              />
+              Female
+            </label>
+
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                value="other"
+                {...register("gender", { required: "Gender required" })}
+              />
+              Other
+            </label>
+          </div>
+
+          {errors.gender && (
+            <p className="text-sm text-red-400 mt-1">{errors.gender.message}</p>
+          )}
 
           <input
             type="password"
@@ -81,6 +115,6 @@ export default function RegisterPage() {
           <button className="fill-btn w-full">Register</button>
         </form>
       </div>
-    </section>
+    </main>
   );
 }

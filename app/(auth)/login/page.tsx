@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 type LoginForm = {
   email: string;
@@ -10,45 +11,42 @@ type LoginForm = {
 };
 
 export default function LoginPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginForm>();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const onSubmit = (data: LoginForm) => {
-    console.log("Login Data:", data);
+  const onSubmit = async (data: LoginForm) => {
+    setLoading(true);
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      router.push("/profile");
+      router.refresh(); // Miiddleware Update
+    } else {
+      alert("Login failed ❌");
+    }
+    setLoading(false);
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/80 backdrop-blur-md p-8 shadow-xl">
-        <h2 className="text-3xl font-bold text-white text-center">
-          Welcome Back
-        </h2>
-        <p className="mt-2 text-center text-slate-400">
-          Login to continue tracking your career
-        </p>
-
+    <main className="min-h-screen flex items-center justify-center px-4 bg-slate-950">
+      <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/80 p-8 shadow-xl">
+        <h2 className="text-3xl font-bold text-white text-center">Welcome Back</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-          {/* Email */}
-          <div>
-            <input
-              type="email"
-              placeholder="Email address"
-              {...register("email", { required: "Email is required" })}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          {/* Password */}
+          <input
+            className="w-full p-3 rounded bg-slate-800 text-white border border-slate-600"
+            type="email"
+            placeholder="Email address"
+            {...register("email", { required: "Email is required" })}
+          />
           <div className="relative">
             <input
+              className="w-full p-3 rounded bg-slate-800 text-white border border-slate-600"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               {...register("password", { required: "Password is required" })}
@@ -56,20 +54,16 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.password.message}
-              </p>
-            )}
           </div>
-
-          <button type="submit" className="w-full fill-btn">
-            Login
+          <button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded transition">
+            {loading ? "Logging in..." : "Login"}
           </button>
+          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+          {errors.password && <p className="text-red-500">{errors.password.message}</p>}
         </form>
       </div>
     </main>
