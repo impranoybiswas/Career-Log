@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-
-import { ObjectId } from "mongodb";
 import { connectDB } from "@/lib/mongodb";
 
 export async function GET(req: NextRequest) {
@@ -21,7 +19,7 @@ export async function GET(req: NextRequest) {
     const user = await db
       .collection("users")
       .findOne(
-        { _id: new ObjectId(decoded.userId) },
+        { email: decoded.email },
         { projection: { password: 0 } }
       );
 

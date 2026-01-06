@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
     }
 
+    // Generate JWT token
     const token = signToken({ userId: user._id.toString(), email: user.email });
 
     const res = NextResponse.json({

@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 type RegisterForm = {
@@ -11,6 +14,8 @@ type RegisterForm = {
 };
 
 export default function RegisterPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -18,12 +23,19 @@ export default function RegisterPage() {
   } = useForm<RegisterForm>();
 
   const onSubmit = async (data: RegisterForm) => {
-    await fetch("/api/register", {
+    setLoading(true);
+    const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    console.log("Register Data:", data);
+    if (res.ok) {
+      router.push("/profile");
+      router.refresh(); // Miiddleware Update
+    } else {
+      alert("Registration failed ❌");
+    }
+    setLoading(false);
   };
 
   return (
@@ -65,9 +77,7 @@ export default function RegisterPage() {
           />
 
           <div className="flex gap-4 mt-2">
-            <label className="flex items-center gap-1">
-                Gender : 
-            </label>
+            <label className="flex items-center gap-1">Gender :</label>
             <label className="flex items-center gap-1">
               <input
                 type="radio"
@@ -112,8 +122,18 @@ export default function RegisterPage() {
             </p>
           )}
 
-          <button className="fill-btn w-full">Register</button>
+          <button className="fill-btn w-full">
+            {loading ? "Loading..." : "Register"}
+          </button>
         </form>
+        <div>
+          <p className="mt-4 text-center text-slate-400">
+            Already have an account{" "}
+            <Link href="/login" className="text-indigo-400 hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );

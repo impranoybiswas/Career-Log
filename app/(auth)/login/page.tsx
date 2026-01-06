@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type LoginForm = {
   email: string;
@@ -65,6 +66,14 @@ export default function LoginPage() {
           {errors.email && <p className="text-red-500">{errors.email.message}</p>}
           {errors.password && <p className="text-red-500">{errors.password.message}</p>}
         </form>
+        <div>
+          <p className="mt-4 text-center text-slate-400">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-indigo-400 hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );
