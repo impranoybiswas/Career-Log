@@ -24,3 +24,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* CUSTOM CSS */
+
+main {
+  @apply relative min-h-dvh overflow-hidden bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 text-white;
+}
+
+input {
+  @apply w-full rounded-lg bg-slate-800 px-4 py-3 text-white outline-none ring-1 ring-slate-700 focus:ring-indigo-500;
+}
+
+button {
+  @apply cursor-pointer rounded-lg transition-all duration-300 ease-in-out;
+}
+
+.fill-btn {
+  @apply bg-indigo-500 px-6 py-3 font-medium text-white hover:bg-indigo-600;
+}
+
+.border-btn {
+  @apply border border-slate-600 px-6 py-3 text-slate-200 hover:bg-slate-800;
+}
