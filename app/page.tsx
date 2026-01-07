@@ -2,8 +2,8 @@ import { FaGithub, FaLinkedin, FaBriefcase } from "react-icons/fa";
 
 export default function HomePage() {
   return (
-    <main className="pt-15 md:pt-20">
-      <section className="mx-auto max-w-7xl p-5">
+    <main>
+      <section className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 items-center">
           {/* Left Content */}
           <div>

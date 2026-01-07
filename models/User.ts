@@ -6,6 +6,7 @@ export interface User {
   email: string;
   mobile: string;
   gender: string;
+  links: { name: string; link: string }[];
   password: string;
   createdAt: Date;
 }

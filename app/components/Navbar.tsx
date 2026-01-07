@@ -16,7 +16,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+    <nav className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 scale-97 hover:scale-100 transition-all duration-300 ease-in-out">
       <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 backdrop-blur-md p-2 shadow-xl">
         {navLink.map((link) => {
           const isActive = pathname === link.url;
