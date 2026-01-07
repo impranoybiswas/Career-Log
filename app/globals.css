@@ -43,6 +43,10 @@ option {
   @apply bg-slate-800/40 text-white px-4 py-3 block;
 }
 
+textarea {
+  @apply w-full h-32 rounded-lg bg-slate-800/40 px-4 py-3 text-white outline-none ring-1 ring-slate-700 focus:ring-indigo-500;
+}
+
 button {
   @apply cursor-pointer rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2;
 }

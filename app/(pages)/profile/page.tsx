@@ -13,6 +13,7 @@ import {
   FaGithub,
   FaGlobe,
   FaBriefcase,
+  FaUser,
 } from "react-icons/fa";
 
 import Loading from "@/app/loading";
@@ -117,6 +118,7 @@ export default function ProfilePage() {
                     {link.name === "LinkedIn" && <FaLinkedin />}
                     {link.name === "GitHub" && <FaGithub />}
                     {link.name === "Website" && <FaGlobe />}
+                    {link.name === "Portfolio" && <FaUser />}
                     {link.name}
                   </Link>
                 ))}

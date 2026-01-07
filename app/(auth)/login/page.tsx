@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 type LoginForm = {
   email: string;
@@ -33,7 +34,7 @@ export default function LoginPage() {
       router.push("/profile");
       router.refresh(); // Miiddleware Update
     } else {
-      alert("Login failed ❌");
+      toast.error("Login failed ❌");
     }
     setLoading(false);
   };

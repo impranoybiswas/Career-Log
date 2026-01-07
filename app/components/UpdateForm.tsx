@@ -4,6 +4,7 @@ import { User } from "@/models/User";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { MdDelete } from "react-icons/md";
 
 type UpdateForm = { name: string; mobile: string };
@@ -47,14 +48,14 @@ export default function UpdateForm({ user }: { user: User }) {
         body: JSON.stringify({ email: user.email, ...data, links: linkInputs }),
       });
       if (res.ok) {
-        alert("Profile updated ✅");
+        toast.success("Profile updated ✅");
         router.refresh();
       } else {
-        alert("Update failed ❌");
+        toast.error("Update failed ❌");
       }
     } catch (err) {
       console.error(err);
-      alert("Server error ❌");
+      toast.error("Server error ❌");
     }
     setLoading(false);
   };

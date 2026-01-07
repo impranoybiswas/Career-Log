@@ -1,19 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Job } from "@/models/Job";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import Modal from "@/ui/Modal";
+import toast from "react-hot-toast";
+import EditJobForm from "./EditJobForm";
+import { useRouter } from "next/navigation";
 
 export default function JobTable({ author }: { author: string }) {
-  const [loading, setLoading] = useState(false); // শুরুতে false রাখাই ভালো যদি ইফেক্টে চেক থাকে
+  const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
-    // যদি author না থাকে, তবে ডাটা ক্লিয়ার করে ফিরে যাও
     if (!author) {
       setJobs([]);
       return;
     }
 
-    // Race condition এবং অহেতুক রেন্ডার এড়াতে AbortController ব্যবহার করা ভালো
+    // Race condition
     const controller = new AbortController();
 
     const fetchJobs = async () => {
@@ -27,26 +32,19 @@ export default function JobTable({ author }: { author: string }) {
         });
 
         if (!res.ok) {
-          // যদি সার্ভার থেকে কোনো ভুল রেসপন্স আসে (যেমন: 404 বা 500)
           throw new Error(`Server responded with status: ${res.status}`);
         }
 
         const data = await res.json();
         setJobs(data.jobs || []);
       } catch (err: unknown) {
-        // ১. এখানে 'unknown' ব্যবহার করা হয়েছে (TS-এর স্ট্যান্ডার্ড)
-
         if (err instanceof Error) {
-          // ২. এখন TypeScript জানে 'err' একটি Error অবজেক্ট
           if (err.name === "AbortError") {
-            // রিকোয়েস্ট ক্যানসেল হলে এটি কোনো সিরিয়াস ইরর নয়
-            console.log("Fetch aborted");
+            toast.error("Fetch aborted");
           } else {
-            // আসল ইরর মেসেজ এখানে পাওয়া যাবে
             console.error("Fetch error:", err.message);
           }
         } else {
-          // ৩. যদি ইররটি Error অবজেক্ট না হয়ে অন্য কিছু হয় (খুবই রেয়ার)
           console.error("An unexpected error occurred:", err);
         }
       } finally {
@@ -56,9 +54,37 @@ export default function JobTable({ author }: { author: string }) {
 
     fetchJobs();
 
-    // Cleanup function: যদি কম্পোনেন্ট আনমাউন্ট হয় বা author চেঞ্জ হয়, আগের রিকোয়েস্ট বন্ধ হবে
     return () => controller.abort();
   }, [author]);
+
+  const handleDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting job...");
+
+    const previousJobs = jobs;
+    setJobs((prev) => prev.filter((job) => job._id?.toString() !== id));
+
+    try {
+      const res = await fetch("/api/delete-job", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message);
+      }
+
+      toast.success("Job deleted successfully", { id: toastId });
+    } catch (error) {
+      setJobs(previousJobs);
+      toast.error("Could not delete job. Please try again.", {
+        id: toastId,
+      });
+      console.error(error);
+    }
+  };
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-700 bg-slate-900/80 backdrop-blur-md shadow-xl">
@@ -71,14 +97,15 @@ export default function JobTable({ author }: { author: string }) {
             <th>Location</th>
             <th>Description</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={6} className="p-10 text-center">
-                {/* একটি সুন্দর লোডার দিতে পারেন */}
+              <td colSpan={7} className="p-10 text-center">
+                {/* Loader */}
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                   <p className="text-slate-400">Loading jobs...</p>
@@ -88,7 +115,7 @@ export default function JobTable({ author }: { author: string }) {
           ) : jobs.length === 0 ? (
             <tr>
               <td
-                colSpan={6}
+                colSpan={7}
                 className="p-10 text-center text-slate-400 italic"
               >
                 No jobs added yet.
@@ -124,6 +151,52 @@ export default function JobTable({ author }: { author: string }) {
                   >
                     {job.status}
                   </span>
+                </td>
+                <td>
+                  <div className="flex items-center justify-center gap-2">
+                    <Modal
+                      label={
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800/70 text-slate-300 hover:bg-blue-500 hover:text-white transition cursor-pointer">
+                          <FaEdit />
+                        </span>
+                      }
+                    >
+                      <EditJobForm
+                        job={job}
+                        onSuccess={() => {
+                          // simple refresh strategy
+                          router.refresh();
+                        }}
+                      />
+                    </Modal>
+                    <Modal
+                      label={
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800/70 text-slate-300 hover:bg-red-500 hover:text-white transition cursor-pointer">
+                          <FaTrash />
+                        </span>
+                      }
+                    >
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-200">
+                          Delete Job
+                        </h3>
+                        <p className="text-slate-400">
+                          Are you sure you want to delete this job?
+                        </p>
+                        <div className="flex items-center justify-end gap-2 mt-4">
+                          <button
+                            onClick={() =>
+                              handleDelete(job._id?.toString() || "")
+                            }
+                            className="flex items-center justify-center gap-2 rounded-lg bg-red-500/90 py-3 px-6 text-white hover:bg-red-600 transition"
+                          >
+                            Delete
+                          </button>
+                          <button className="border-btn">Cancel</button>
+                        </div>
+                      </div>
+                    </Modal>
+                  </div>
                 </td>
               </tr>
             ))

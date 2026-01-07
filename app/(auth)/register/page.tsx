@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 type RegisterForm = {
   name: string;
@@ -33,7 +34,7 @@ export default function RegisterPage() {
       router.push("/profile");
       router.refresh(); // Miiddleware Update
     } else {
-      alert("Registration failed ❌");
+      toast.error("Registration failed ❌");
     }
     setLoading(false);
   };

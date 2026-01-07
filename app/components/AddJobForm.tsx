@@ -3,6 +3,7 @@
 import { Job } from "@/models/Job";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 
 
@@ -16,27 +17,28 @@ export default function AddJobForm({ email }: { email: string }) {
   const onSubmit = async (data: Job) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/jobs", {
+      const res = await fetch("/api/add-job", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({author : email, ...data }),
       });
       if (res.ok) {
-        alert("Job added ✅");
+        toast.success("Job added ✅");
       } else {
-        alert("Add job failed ❌");
+        toast.error("Add job failed ❌");
       }
     } catch (err) {
       console.error(err);
-      alert("Server error ❌");
+      toast.error("Server error ❌");
     }
     setLoading(false);
+    reset();
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-2 items-center"
+      className="flex flex-col gap-4 items-center"
     >
       <input
         placeholder="Company"
@@ -50,7 +52,7 @@ export default function AddJobForm({ email }: { email: string }) {
 
       <input placeholder="Location" {...register("location")} />
 
-      <input placeholder="Description" {...register("description")} />
+      <textarea {...register("description")} placeholder="Description" />
 
       <select {...register("status")}>
         <option value="">Select Status</option>
