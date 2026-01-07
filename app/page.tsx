@@ -16,12 +16,12 @@ export default function HomePage() {
               In One Smart Place
             </h1>
 
-            <p className="mt-6 text-lg text-slate-300 max-w-xl">
+            <p className="mt-6 text-lg text-slate-300 max-w-xl text-center md:text-left">
               DevTrackr helps developers manage their portfolio links, social
               profiles, and job applications with clarity and confidence.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-4 justify-center md:justify-start">
               <button className="fill-btn">
                 Get Started
               </button>
@@ -31,7 +31,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="mt-10 flex items-center gap-4 md:gap-6 text-slate-400 text-sm md:text-base">
+            <div className="mt-10 flex items-center justify-center md:justify-start gap-4 md:gap-6 text-slate-400 text-sm md:text-base">
               <div className="flex items-center gap-2 ">
                 <FaGithub className="md:text-xl" />
                 GitHub
@@ -50,7 +50,7 @@ export default function HomePage() {
           {/* Right Visual Card */}
           <div className="relative">
             <div className="rounded-2xl bg-slate-900/80 p-6 shadow-2xl border border-slate-700">
-              <p className="text-sm text-slate-400 mb-2">Developer Dashboard</p>
+              <p className="text-sm text-slate-400 mb-4 text-center">Developer Dashboard</p>
 
               <div className="space-y-4">
                 <div className="rounded-lg bg-slate-800 p-4">
